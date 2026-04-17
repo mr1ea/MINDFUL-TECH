@@ -6,3 +6,5 @@ build/
 index.html
 database.txt
 .vercel
+.env
+*.env
