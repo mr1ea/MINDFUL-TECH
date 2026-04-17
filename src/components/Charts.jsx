@@ -82,23 +82,38 @@ export const FocusSessionsChart = ({ data, darkMode }) => {
 
 // Content Category Pie Chart
 export const ContentCategoryChart = ({ data, darkMode }) => {
-  const COLORS = ['#10b981', '#a855f7', '#3b82f6', '#f59e0b', '#ef4444'];
+  const COLORS = {
+    harmful: '#ef4444',
+    educational: '#3b82f6',
+    explicit: '#ec4899',
+    entertaining: '#f59e0b',
+    news: '#10b981',
+    social_media: '#a855f7',
+    productive: '#06b6d4',
+    neutral: '#6b7280'
+  };
+
+  const chartData = Object.entries(data).map(([category, count]) => ({
+    name: category.replace('_', ' ').toUpperCase(),
+    value: count,
+    fill: COLORS[category] || '#6b7280'
+  }));
 
   return (
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
         <Pie
-          data={data}
+          data={chartData}
           cx="50%"
           cy="50%"
           labelLine={false}
-          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-          outerRadius={100}
+          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+          outerRadius={80}
           fill="#8884d8"
           dataKey="value"
         >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          {chartData.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={entry.fill} />
           ))}
         </Pie>
         <Tooltip 
@@ -110,6 +125,37 @@ export const ContentCategoryChart = ({ data, darkMode }) => {
           }}
         />
       </PieChart>
+    </ResponsiveContainer>
+  );
+};
+
+// Weekly Activity Chart
+export const WeeklyActivityChart = ({ data, darkMode }) => {
+  return (
+    <ResponsiveContainer width="100%" height={250}>
+      <BarChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#334155' : '#e2e8f0'} />
+        <XAxis 
+          dataKey="day" 
+          stroke={darkMode ? '#94a3b8' : '#64748b'}
+          style={{ fontSize: '12px' }}
+        />
+        <YAxis 
+          stroke={darkMode ? '#94a3b8' : '#64748b'}
+          style={{ fontSize: '12px' }}
+        />
+        <Tooltip 
+          contentStyle={{
+            backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+            border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+            borderRadius: '8px',
+            color: darkMode ? '#ffffff' : '#000000'
+          }}
+        />
+        <Legend />
+        <Bar dataKey="focusTime" fill="#a855f7" name="Focus Time" radius={[8, 8, 0, 0]} />
+        <Bar dataKey="screenTime" fill="#ec4899" name="Screen Time" radius={[8, 8, 0, 0]} />
+      </BarChart>
     </ResponsiveContainer>
   );
 };
@@ -147,37 +193,6 @@ export const PlatformUsageChart = ({ data, darkMode }) => {
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  );
-};
-
-// Weekly Activity Chart
-export const WeeklyActivityChart = ({ data, darkMode }) => {
-  return (
-    <ResponsiveContainer width="100%" height={250}>
-      <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#334155' : '#e2e8f0'} />
-        <XAxis 
-          dataKey="day" 
-          stroke={darkMode ? '#94a3b8' : '#64748b'}
-          style={{ fontSize: '12px' }}
-        />
-        <YAxis 
-          stroke={darkMode ? '#94a3b8' : '#64748b'}
-          style={{ fontSize: '12px' }}
-        />
-        <Tooltip 
-          contentStyle={{
-            backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-            border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-            borderRadius: '8px',
-            color: darkMode ? '#ffffff' : '#000000'
-          }}
-        />
-        <Legend />
-        <Bar dataKey="focusTime" fill="#a855f7" name="Focus Time" radius={[8, 8, 0, 0]} />
-        <Bar dataKey="screenTime" fill="#ec4899" name="Screen Time" radius={[8, 8, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

@@ -32,8 +32,15 @@ app.use('/api/content', contentRoutes);
 app.use('/api/mood', moodRoutes);
 app.use('/api/focus', focusRoutes);
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mindfultech';
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URL ||
+  (process.env.NODE_ENV === 'development' ? 'mongodb://127.0.0.1:27017/mindfultech' : undefined);
+
+if (!MONGODB_URI) {
+  console.error('❌ Missing MongoDB connection string. Set MONGODB_URI or MONGO_URL in your environment.');
+  process.exit(1);
+}
+
+mongoose.connect(MONGODB_URI)
   .then(() => console.log('✅ MongoDB Connected Successfully'))
   .catch((err) => console.error('❌ MongoDB Connection Error:', err));
 

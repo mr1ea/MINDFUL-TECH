@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "MindfulTech Content Monitor",
+  "version": "1.0",
+  "description": "Passively monitors browsing content and sends to backend for AI classification.",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "scripting",
+    "notifications"
+  ],
+  "host_permissions": [
+    "http://localhost:5000/*",
+    "https://your-backend-url.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "MindfulTech Monitor"
+  }
+}

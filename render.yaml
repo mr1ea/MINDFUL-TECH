@@ -1,0 +1,28 @@
+services:
+  - type: web_service
+    name: mindfultech-backend
+    env: node
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        value: ${MONGODB_URI}
+        secure: true
+      - key: JWT_SECRET
+        value: ${JWT_SECRET}
+        secure: true
+      - key: GROQ_API_KEY
+        value: ${GROQ_API_KEY}
+        secure: true
+      - key: GMAIL_USER
+        value: ${GMAIL_USER}
+        secure: true
+      - key: GMAIL_PASS
+        value: ${GMAIL_PASS}
+        secure: true
+      - key: APP_URL
+        value: https://your-frontend-url
+      - key: NODE_ENV
+        value: production

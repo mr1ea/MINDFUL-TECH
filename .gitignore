@@ -5,3 +5,4 @@ build/
 *.log
 index.html
 database.txt
+.vercel

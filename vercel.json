@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "public": false,
+  "redirects": [
+    {
+      "source": "/api/auth/:path*",
+      "destination": "https://your-backend-url/api/auth/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/api/user/:path*",
+      "destination": "https://your-backend-url/api/user/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/api/content/:path*",
+      "destination": "https://your-backend-url/api/content/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/api/mood/:path*",
+      "destination": "https://your-backend-url/api/mood/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/api/focus/:path*",
+      "destination": "https://your-backend-url/api/focus/:path*",
+      "permanent": false
+    }
+  ],
+  "env": {
+    "VITE_API_BASE_URL": "@vite_api_base_url"
+  }
+}

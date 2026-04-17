@@ -6,32 +6,51 @@ const contentLogSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  // Raw input the user described (for AI analysis)
-  contentInput: {
+  url: {
+    type: String,
+    required: true
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  text: {
     type: String,
     default: ''
-  },
-  platform: {
-    type: String,
-    required: true,
-    enum: ['TikTok', 'Instagram', 'YouTube', 'Twitter', 'Facebook', 'Other']
   },
   category: {
     type: String,
     required: true,
-    enum: ['educational', 'entertainment', 'social', 'news', 'harmful', 'inappropriate', 'other'],
-    default: 'other'
+    enum: ['harmful', 'educational', 'explicit', 'entertaining', 'news', 'social_media', 'productive', 'neutral'],
+    default: 'neutral'
+  },
+  confidence: {
+    type: Number,
+    min: 0,
+    max: 1,
+    default: 0
+  },
+  reason: {
+    type: String,
+    default: ''
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now
+  },
+  // Legacy fields for compatibility
+  platform: {
+    type: String,
+    default: 'Other'
   },
   duration: {
     type: Number,
-    required: true,
     default: 0
   },
   flagged: {
     type: Boolean,
     default: false
   },
-  // AI Analysis fields
   harmful: {
     type: Boolean,
     default: false
@@ -40,14 +59,10 @@ const contentLogSchema = new mongoose.Schema({
     type: String,
     enum: ['low', 'medium', 'high'],
     default: 'low'
-  },
-  reason: {
-    type: String,
-    default: ''
-  },
-  confidence: {
-    type: Number,
-    default: 0
+  }
+}, {
+  timestamps: true
+});
   },
   aiAnalyzed: {
     type: Boolean,

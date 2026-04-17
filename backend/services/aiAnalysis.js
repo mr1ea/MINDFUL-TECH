@@ -1,43 +1,60 @@
 import Groq from 'groq-sdk';
 
+const getAiApiKey = () => process.env.GROQ_API_KEY || process.env.GENERATIVE_API_KEY || process.env.GOOGLE_API_KEY;
+const createGroqClient = () => {
+  const apiKey = getAiApiKey();
+  if (!apiKey) {
+    throw new Error('Missing AI API key. Set GROQ_API_KEY, GENERATIVE_API_KEY, or GOOGLE_API_KEY.');
+  }
+  return new Groq({ apiKey });
+};
+
 export const analyzeContent = async (contentInput) => {
   try {
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const groq = createGroqClient();
 
-    const prompt = `You are a content safety AI for a digital wellness app called MindfulTech.
-Analyze this content and respond ONLY with valid JSON, no extra text.
+    const prompt = `You are a content classification AI for a digital wellness app.
+Analyze the provided content (page title and text) and classify it into one of the following categories:
+- harmful: content promoting violence, hate, self-harm, misinformation, or extreme negativity
+- educational: learning materials, tutorials, how-to guides, documentaries
+- explicit: adult/sexual content, pornography, explicit language
+- entertaining: movies, comedy, gaming, music, sports, fun content
+- news: current events, journalism, politics, breaking news
+- social_media: social networking, personal posts, vlogs, lifestyle sharing
+- productive: work-related, productivity tools, professional development
+- neutral: general browsing, shopping, utilities, uncategorized
 
-Content to analyze: "${contentInput}"
-
-Categories:
-- educational: tutorials, learning, how-to, documentaries
-- entertainment: movies, comedy, gaming, music, sports
-- social: vlogs, personal content, lifestyle
-- news: current events, journalism, politics
-- harmful: violence, hate speech, misinformation, self-harm
-- inappropriate: explicit/adult content
-- other: anything else
-
-Respond ONLY in this exact JSON format, no extra text:
+Respond ONLY with valid JSON in this exact format:
 {
-  "category": "category_name",
-  "harmful": false,
-  "reason": "One sentence explanation",
-  "riskLevel": "low",
-  "confidence": 0.92,
-  "suggestion": "One short wellness tip"
-}`;
+  "category": "one_of_the_above_categories",
+  "confidence": 0.95,
+  "reason": "Brief explanation of why this category was chosen"
+}
+
+Content to analyze: "${contentInput}"`;
 
     const response = await groq.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-     model: 'meta-llama/llama-4-scout-17b-16e-instruct',
-      temperature: 0.3,
-      max_tokens: 300
+      model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+      temperature: 0.1,
+      max_tokens: 200
     });
 
     const text = response.choices[0]?.message?.content || '';
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('No JSON in response');
+
+    const analysis = JSON.parse(jsonMatch[0]);
+
+    // Validate category
+    const validCategories = ['harmful', 'educational', 'explicit', 'entertaining', 'news', 'social_media', 'productive', 'neutral'];
+    if (!validCategories.includes(analysis.category)) {
+      analysis.category = 'neutral';
+      analysis.confidence = 0.5;
+      analysis.reason = 'Unable to classify, defaulting to neutral';
+    }
+
+    return analysis;
 
     const analysis = JSON.parse(jsonMatch[0]);
 
